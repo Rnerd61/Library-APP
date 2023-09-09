@@ -1,14 +1,19 @@
+from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.db import models
 
-
-class UserModel(models.Model):
-    id = models.AutoField(primary_key=True)
+class UserModel(AbstractBaseUser):
+    username = None
     email = models.EmailField(max_length=50, null=False, blank=False, unique=True)
-    password = models.CharField(max_length=64, null=False, blank=False)
-    role = models.CharField(max_length=20, choices=[('User','User'),('Admin','Admin')], default="User")
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    def has_perm(self, perm, obj=None):
+        return self.is_staff
     class Meta:
-        db_table = 'user'
+        db_table = 'auth_user'
 
     def __str__(self):
         return self.email
+

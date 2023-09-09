@@ -1,18 +1,18 @@
 from hashlib import sha256
 
-from django.shortcuts import render
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin, DestroyModelMixin
 
-from .Serializer import UserSerializer, ForgotSerializer, CustomeToken
+from Library.Serializer import IsStaff
+from .Serializer import UserSerializer, CustomToken
 from .models import UserModel
 
 
 # Create your views here.
 class RegisterView(APIView, UpdateModelMixin, DestroyModelMixin):
+
     @staticmethod
     def get(request):
         return Response({'msg': 'Register User'}, status=200)
@@ -42,7 +42,7 @@ class LoginView(APIView, UpdateModelMixin, DestroyModelMixin):
         if serialised_user.is_valid():
             if UserModel.objects.filter(email=serialised_user.validated_data['email'], password=sha256(
                     serialised_user.validated_data['password'].encode()).hexdigest()).exists():
-                token = CustomeToken.get_token(
+                token = CustomToken.get_token(
                     UserModel.objects.get(email=serialised_user.validated_data['email']))
                 response = Response({"msg": "Logged In"}, status=status.HTTP_200_OK)
 

@@ -8,12 +8,14 @@ from rest_framework.mixins import UpdateModelMixin, DestroyModelMixin
 
 from .models import BookModel
 from .models import AuthorModel
-from .Serializer import BookSerializer
+from .Serializer import BookSerializer, IsStaff
 from .Serializer import AuthorSerializer
 
 
 # Create your views here.
 class BooksView(APIView, UpdateModelMixin, DestroyModelMixin):
+
+    permission_classes = [IsStaff]
     @staticmethod
     def get(request, id=None):
         if id:
@@ -30,7 +32,7 @@ class BooksView(APIView, UpdateModelMixin, DestroyModelMixin):
 
         return Response(SerializedBook.data, status=200)
 
-    permission_classes = [IsAuthenticated]
+
     @staticmethod
     def post(request):
         create_serializer = BookSerializer(data=request.data)
@@ -73,7 +75,7 @@ class BooksView(APIView, UpdateModelMixin, DestroyModelMixin):
 
 class AuthorView(APIView, UpdateModelMixin, DestroyModelMixin):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsStaff]
     @staticmethod
     def get(request, id=None):
         if id:
@@ -117,6 +119,7 @@ class AuthorView(APIView, UpdateModelMixin, DestroyModelMixin):
 
         return Response({"msg": "Invalid Data"})
 
+    @staticmethod
     def delete(request, id=None):
         if not AuthorModel.objects.filter(id=id).exists():
             return Response({"msg": "Author with Id Not Found"})
